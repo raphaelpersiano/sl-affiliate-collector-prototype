@@ -40,7 +40,7 @@ router.get('/config', (req, res) => {
 });
 
 // Halaman affiliate form
-router.get('/affiliate/:affiliateId', (req, res) => {
+router.get('/form/:affiliateId', (req, res) => {
   res.sendFile(path.join(__dirname, '../../public/affiliate_form.html'));
 });
 
