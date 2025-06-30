@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Affiliator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        /* Optional: Custom focus style if needed, Tailwind's default is usually good */
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4F46E5; /* Indigo-600 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5 ); /* Indigo-500 with opacity */
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <img src="/img/logo_skorlife_blue.png" class="h-[30px] mx-auto mb-4" alt="Logo Skorlife">
+        <h2 class="text-3xl font-bold text-center text-blue-800 mb-8">Masuk Sebagai Affiliate</h2>
+        
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                <div class="mt-1 flex rounded-md shadow-sm">
+                    <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                        +62
+                    </span>
+                    <input type="tel" id="phone" name="phone" required 
+                           placeholder="8xxxxxxxxx"
+                           class="flex-1 block w-full px-3 py-2 border border-gray-300 rounded-none rounded-r-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+            </div>
+
+            <!-- PIN Input Section -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">PIN (6 Digit Angka)</label>
+                <div class="flex justify-center space-x-2">
+                    <input type="text" id="pin1" data-pin-index="0" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="w-12 h-12 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-indigo-600 transition duration-150 ease-in-out">
+                    <input type="text" id="pin2" data-pin-index="1" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="w-12 h-12 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-indigo-600 transition duration-150 ease-in-out">
+                    <input type="text" id="pin3" data-pin-index="2" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="w-12 h-12 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-indigo-600 transition duration-150 ease-in-out">
+                    <input type="text" id="pin4" data-pin-index="3" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="w-12 h-12 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-indigo-600 transition duration-150 ease-in-out">
+                    <input type="text" id="pin5" data-pin-index="4" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="w-12 h-12 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-indigo-600 transition duration-150 ease-in-out">
+                    <input type="text" id="pin6" data-pin-index="5" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="w-12 h-12 text-center text-2xl font-bold border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:ring-indigo-600 transition duration-150 ease-in-out">
+                </div>
+            </div>
+            
+            <button type="submit" 
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300">
+                Login
+            </button>
+        </form>
+
+        <p id="message" class="mt-4 text-center text-sm text-gray-600"></p>
+
+        <!-- Separator -->
+        <div class="relative flex py-5 items-center">
+            <div class="flex-grow border-t border-gray-300"></div>
+            <span class="flex-shrink mx-4 text-gray-400">ATAU</span>
+            <div class="flex-grow border-t border-gray-300"></div>
+        </div>
+
+        <!-- Google Login Button -->
+        <div class="flex justify-center">
+            <div id="g_id_onload"
+                 data-client_id="599708309205-ipref1vmud91nd4fjjocdl1duvne5krt.apps.googleusercontent.com"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-size="large"
+                 data-theme="outline"
+                 data-text="sign_in_with"
+                 data-shape="rectangular"
+                 data-logo_alignment="left">
+            </div>
+        </div>
+        <!-- <button onclick="window.location.href='/api/google-login'">Login with Google</button> -->
+
+        <p class="mt-4 text-center text-sm text-gray-600">Belum punya akun? <a href="/register" class="font-medium text-indigo-600 hover:text-indigo-500">Daftar di sini</a></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', ( ) => {
+            const loginForm = document.getElementById('loginForm');
+            const messageElement = document.getElementById('message');
+
+            // Get all PIN input fields
+            const pinInputs = Array.from(document.querySelectorAll('#pin1, #pin2, #pin3, #pin4, #pin5, #pin6'));
+
+            function setupPinInputs(inputs) {
+                inputs.forEach((input, index) => {
+                    input.addEventListener('input', (e) => {
+                        // Only allow digits
+                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                        if (e.target.value.length === 1 && index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    });
+
+                    // Handle paste event
+                    input.addEventListener('paste', (e) => {
+                        e.preventDefault();
+                        const pasteData = e.clipboardData.getData('text').trim();
+                        if (/^\d{6}$/.test(pasteData)) {
+                            for (let i = 0; i < inputs.length; i++) {
+                                inputs[i].value = pasteData[i];
+                            }
+                            inputs[inputs.length - 1].focus(); // Focus on the last input after pasting
+                        }
+                    });
+                });
+            }
+
+            setupPinInputs(pinInputs);
+
+            // --- Standard Login Form Submission ---
+            loginForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                const phoneInput = document.getElementById('phone').value;
+                const pin = pinInputs.map(input => input.value).join('');
+
+                // Gabungkan prefix +62 dengan nomor telepon
+                const phone = '+62' + phoneInput;
+
+                // Basic validation
+                if (pin.length !== 6 || !/^\d{6}$/.test(pin)) {
+                    messageElement.textContent = 'PIN harus 6 digit angka!';
+                    messageElement.className = 'mt-4 text-center text-sm text-red-600';
+                    return;
+                }
+
+                // Validasi nomor telepon (harus dimulai dengan 8 dan minimal 9 digit)
+                if (!/^8\d{8,}$/.test(phoneInput)) {
+                    messageElement.textContent = 'Nomor telepon harus dimulai dengan 8 dan minimal 9 digit!';
+                    messageElement.className = 'mt-4 text-center text-sm text-red-600';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ phone, pin })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        messageElement.textContent = data.message;
+                        messageElement.className = 'mt-4 text-center text-sm text-green-600';
+                        window.location.href = '/dashboard'; 
+                    } else {
+                        messageElement.textContent = data.message || 'Login gagal. Periksa nomor telepon dan PIN Anda.';
+                        messageElement.className = 'mt-4 text-center text-sm text-red-600';
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    messageElement.textContent = 'Terjadi kesalahan jaringan atau server.';
+                    messageElement.className = 'mt-4 text-center text-sm text-red-600';
+                }
+            });
+        });
+
+        // --- Google Login Callback Function ---
+        async function handleCredentialResponse(response) {
+            console.log("Encoded ID Token: " + response.credential);
+
+            try {
+            const res = await fetch('/api/google-login', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_token: response.credential })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                window.location.href = '/dashboard';
+            } else {
+                alert(data.message || 'Login gagal');
+            }
+            } catch (error) {
+            console.error(error);
+            alert('Terjadi kesalahan saat login.');
+            }
+        }
+    </script>
+
+</body>
+</html>

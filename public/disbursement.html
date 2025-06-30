@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Disbursement</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .admin-container {
+      display: none;
+    }
+    .admin-container.show {
+      display: block;
+    }
+    .modal {
+      display: none;
+    }
+    .modal.show {
+      display: flex;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
+
+  <!-- Password Protection Screen -->
+  <div id="passwordScreen" class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+      <div class="text-center mb-6">
+        <i class="fas fa-shield-alt text-4xl text-blue-600 mb-4"></i>
+        <h2 class="text-2xl font-bold text-gray-800">Admin Access</h2>
+        <p class="text-gray-600">Masukkan password admin untuk melanjutkan</p>
+      </div>
+      
+      <form id="passwordForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password Admin</label>
+          <input type="password" id="adminPassword" 
+                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                 placeholder="Masukkan password admin" required>
+        </div>
+        <button type="submit" 
+                class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 font-medium">
+          <i class="fas fa-unlock mr-2"></i>
+          Masuk Admin
+        </button>
+      </form>
+      <div id="passwordError" class="mt-4 text-red-600 text-sm text-center hidden"></div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminContainer" class="admin-container p-6">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="bg-white p-6 rounded-xl shadow-md mb-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+              <i class="fas fa-users-cog mr-3 text-blue-600"></i>
+              Admin Dashboard - Leads Management
+            </h1>
+            <p class="text-gray-600 mt-2">Kelola semua data leads dan disbursement</p>
+          </div>
+          <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
+            <i class="fas fa-sign-out-alt mr-2"></i>
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center">
+            <div class="p-3 bg-blue-100 rounded-full">
+              <i class="fas fa-users text-blue-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-600">Total Leads</p>
+              <p id="totalLeads" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center">
+            <div class="p-3 bg-green-100 rounded-full">
+              <i class="fas fa-check-circle text-green-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-600">Disbursed</p>
+              <p id="disbursedCount" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center">
+            <div class="p-3 bg-yellow-100 rounded-full">
+              <i class="fas fa-clock text-yellow-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-600">Pending</p>
+              <p id="pendingCount" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-md">
+          <div class="flex items-center">
+            <div class="p-3 bg-purple-100 rounded-full">
+              <i class="fas fa-money-bill-wave text-purple-600 text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-600">Total Amount</p>
+              <p id="totalAmount" class="text-2xl font-bold text-gray-800">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leads Table -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-6 border-b border-gray-200">
+          <h3 class="text-xl font-semibold text-gray-800">
+            <i class="fas fa-table mr-2"></i>
+            Data Leads
+          </h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lead Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Affiliate</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proof</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Update</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTableBody" class="bg-white divide-y divide-gray-200">
+              <!-- Data will be loaded here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div id="imageModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl max-w-4xl max-h-[90vh] overflow-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold">Bukti Disbursement</h3>
+        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      <div class="text-center">
+        <img id="modalImage" src="" alt="Proof" class="max-w-full max-h-[70vh] object-contain mx-auto">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allLeads = [];
+
+    // Password protection
+    document.getElementById('passwordForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('passwordError');
+      
+      if (!password) {
+        errorDiv.textContent = 'Masukkan password admin';
+        errorDiv.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/admin/validate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ password: password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Simpan token admin di localStorage untuk session
+          localStorage.setItem('adminToken', result.token);
+          
+          // Sembunyikan login screen dan tampilkan dashboard
+          document.getElementById('passwordScreen').style.display = 'none';
+          document.getElementById('adminContainer').classList.add('show');
+          loadAdminData();
+        } else {
+          errorDiv.textContent = result.error || 'Password admin salah';
+          errorDiv.classList.remove('hidden');
+          document.getElementById('adminPassword').value = '';
+        }
+      } catch (error) {
+        console.error('Error validating admin password:', error);
+        errorDiv.textContent = 'Terjadi kesalahan saat validasi password';
+        errorDiv.classList.remove('hidden');
+      }
+    });
+
+    // Logout function
+    function logout() {
+      // Hapus token admin dari localStorage
+      localStorage.removeItem('adminToken');
+      
+      document.getElementById('passwordScreen').style.display = 'flex';
+      document.getElementById('adminContainer').classList.remove('show');
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('passwordError').classList.add('hidden');
+    }
+    // Load admin data
+    async function loadAdminData() {
+      try {
+        const response = await fetch('/api/leads/admin');
+        const data = await response.json();
+        
+        if (response.ok) {
+          allLeads = data.leads || [];
+          const totalAmount = data.totalAmount || 0;
+          
+          updateStats(allLeads, totalAmount);
+          renderLeadsTable(allLeads);
+        } else {
+          console.error('Error loading admin data:', data.error);
+          alert('Gagal memuat data admin');
+        }
+      } catch (error) {
+        console.error('Error loading admin data:', error);
+        alert('Terjadi kesalahan saat memuat data');
+      }
+    } // Render leads table
+    function renderLeadsTable(leads) {
+      const tbody = document.getElementById('leadsTableBody');
+      tbody.innerHTML = '';
+
+      leads.forEach(lead => {
+        const tr = document.createElement('tr');
+        tr.classList.add('hover:bg-gray-50');
+
+        const statusDropdown = getStatusDropdown(lead.id, lead.status);
+        const proofButton = getProofButton(lead);
+        const updateButton = getUpdateButton(lead.id);
+        const formattedDate = new Date(lead.created_at).toLocaleDateString('id-ID');
+
+        tr.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">${lead.full_name}</div>
+            <div class="text-sm text-gray-500">ID: ${lead.id}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${lead.whatsapp_number}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">${lead.affiliate_name}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            ${statusDropdown}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            ${proofButton}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            ${updateButton}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            ${formattedDate}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Get status dropdown
+    function getStatusDropdown(leadId, currentStatus) {
+      const statuses = [
+        { value: 'registration', label: 'Registration' },
+        { value: 'consultation', label: 'Consultation' },
+        { value: 'payment', label: 'Payment' },
+        { value: 'disbursement', label: 'Disbursement' }
+      ];
+      
+      let options = '';
+      statuses.forEach(status => {
+        const selected = status.value === currentStatus ? 'selected' : '';
+        options += `<option value="${status.value}" ${selected}>${status.label}</option>`;
+      });
+      
+      return `<select id="status-${leadId}" class="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                ${options}
+              </select>`;
+    }
+
+    // Get update button
+    function getUpdateButton(leadId) {
+      return `<button onclick="updateLeadStatus('${leadId}')" 
+                      class="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600 transition">
+                <i class="fas fa-sync mr-1"></i>
+                Update
+              </button>`;
+    }
+
+    // Get status badge (kept for reference but not used in new table)
+    function getStatusBadge(status) {
+      const statusConfig = {
+        'registration': { color: 'blue', text: 'Registration' },
+        'consultation': { color: 'yellow', text: 'Consultation' },
+        'payment': { color: 'purple', text: 'Payment' },
+        'disbursement': { color: 'green', text: 'Disbursement' }
+      };
+      
+      const config = statusConfig[status] || { color: 'gray', text: status };
+      return `<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-${config.color}-100 text-${config.color}-800">
+                ${config.text}
+              </span>`;
+    }
+
+    // Get proof button
+    function getProofButton(lead) {
+      if (lead.proof_url) {
+        return `
+          <div class="flex flex-col gap-1">
+            <button onclick="showProofModal('${lead.proof_url}')" 
+                    class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 transition">
+              <i class="fas fa-eye mr-1"></i>
+              Lihat Bukti
+            </button>
+            <button onclick="deleteProof('${lead.disbursement_id}', '${lead.id}')" 
+                    class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition">
+              <i class="fas fa-trash mr-1"></i>
+              Hapus
+            </button>
+          </div>`;
+      } else {
+        return `
+          <button onclick="showUploadModal('${lead.id}')" 
+                  class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 transition">
+            <i class="fas fa-upload mr-1"></i>
+            Upload
+          </button>`;
+      }
+    }
+
+    // Update statistics
+    function updateStats(leads, totalAmount) {
+      const totalLeads = leads.length;
+      const disbursedCount = leads.filter(lead => lead.proof_url).length;
+      const pendingCount = totalLeads - disbursedCount;
+      
+      document.getElementById('totalLeads').textContent = totalLeads;
+      document.getElementById('disbursedCount').textContent = disbursedCount;
+      document.getElementById('pendingCount').textContent = pendingCount;
+      document.getElementById('totalAmount').textContent = totalAmount > 0 
+        ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(totalAmount)
+        : '-';
+    }
+
+    // Update lead status
+    async function updateLeadStatus(leadId) {
+      const statusSelect = document.getElementById(`status-${leadId}`);
+      const newStatus = statusSelect.value;
+      
+      if (!newStatus) {
+        alert('Pilih status terlebih dahulu');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/leads/${leadId}/status`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Status berhasil diupdate!');
+          // Reload data untuk refresh tabel
+          loadAdminData();
+        } else {
+          alert(result.error || 'Gagal mengupdate status');
+        }
+      } catch (error) {
+        console.error('Error updating lead status:', error);
+        alert('Terjadi kesalahan saat mengupdate status');
+      }
+    }
+
+    // Delete proof
+    async function deleteProof(disbursementId, leadId) {
+      if (!confirm('Apakah Anda yakin ingin menghapus bukti disbursement ini?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/disbursement/${disbursementId}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('Bukti disbursement berhasil dihapus!');
+          loadAdminData(); // Reload data
+        } else {
+          alert(result.error || 'Gagal menghapus bukti disbursement');
+        }
+      } catch (error) {
+        console.error('Error deleting proof:', error);
+        alert('Terjadi kesalahan saat menghapus bukti');
+      }
+    }
+
+    // Close upload modal
+    function closeUploadModal() {
+      const modal = document.querySelector('.fixed.inset-0');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    // Show upload modal
+    function showUploadModal(leadId) {
+      // Buat modal upload sederhana
+      const modal = document.createElement('div');
+      modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+      modal.innerHTML = `
+        <div class="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+          <h3 class="text-lg font-semibold mb-4">Upload Bukti Disbursement</h3>
+          <form id="uploadForm" enctype="multipart/form-data">
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Disbursement</label>
+              <input type="date" name="disbursement_date" required 
+                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Nominal (Rp)</label>
+              <input type="number" name="amount" required min="0" 
+                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">File Bukti</label>
+              <input type="file" name="proofFile" accept=".pdf,.jpg,.jpeg,.png" required 
+                     class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex gap-2">
+              <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Upload
+              </button>
+              <button type="button" onclick="closeUploadModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                Batal
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Handle form submit
+      document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        formData.append('lead_id', leadId); // Tambahkan lead_id
+        
+        try {
+          const response = await fetch('/api/disbursement', {
+            method: 'POST',
+            body: formData
+          });
+          
+          const result = await response.json();
+          
+          if (response.ok) {
+            alert('Bukti disbursement berhasil diupload!');
+            closeUploadModal();
+            loadAdminData(); // Reload data
+          } else {
+            alert(result.error || 'Gagal mengupload bukti');
+          }
+        } catch (error) {
+          console.error('Error uploading proof:', error);
+          alert('Terjadi kesalahan saat mengupload');
+        }
+      });
+    }
+
+    // Show proof modal
+    function showProofModal(proofUrl) {
+      const modal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+      
+      modalImage.src = proofUrl;
+      modal.classList.add('show');
+    }
+
+    // Close modal
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      modal.classList.remove('show');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('imageModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
+

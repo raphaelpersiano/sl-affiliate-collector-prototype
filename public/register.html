@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Affiliator - Skorlife</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Sign-In -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- GSAP for advanced animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Particles.js for dynamic background -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <!-- Lottie for micro-animations -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --secondary-blue: #3b82f6;
+            --light-blue: #60a5fa;
+            --dark-blue: #1e3a8a;
+            --accent-blue: #06b6d4;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-blue: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
+            --gradient-blue-dark: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        
+        .gradient-bg {
+            background: var(--gradient-blue);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating-animation {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+            to { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8), 0 0 60px rgba(59, 130, 246, 0.4); }
+        }
+        
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.2);
+            border-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        .pin-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        
+        .pin-input:focus {
+            transform: scale(1.1) translateY(-5px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            border-color: var(--secondary-blue);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(59, 130, 246, 0.1));
+        }
+        
+        .pin-input.filled {
+            background: var(--gradient-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+        
+        .btn-primary {
+            background: var(--gradient-blue);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .form-container {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .logo-glow {
+            filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.6));
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-10px) rotate(1deg); }
+            50% { transform: translateY(-5px) rotate(0deg); }
+            75% { transform: translateY(-15px) rotate(-1deg); }
+        }
+        
+        .title-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #ffd700 50%, #ffed4e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleShine 3s ease-in-out infinite;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        @keyframes titleShine {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.3); }
+        }
+        
+        .checkbox-custom {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--secondary-blue);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-custom:checked {
+            background: var(--gradient-blue);
+            border-color: var(--primary-blue);
+            transform: scale(1.1);
+        }
+        
+        .checkbox-custom:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .separator-line {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .separator-line::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--secondary-blue), transparent);
+            animation: separatorGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes separatorGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .google-btn-wrapper {
+            transition: all 0.3s ease;
+        }
+        
+        .google-btn-wrapper:hover {
+            transform: translateY(-2px);
+        }
+        
+        .success-animation {
+            animation: successPulse 0.6s ease-out;
+        }
+        
+        @keyframes successPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .error-shake {
+            animation: errorShake 0.5s ease-in-out;
+        }
+        
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .pin-input {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.25rem;
+            }
+            
+            .form-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .title-gradient {
+                font-size: 1.75rem;
+            }
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Ripple effect */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .ripple:active::before {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <!-- Particles Background -->
+    <div id="particles-js" class="particles-container"></div>
+    
+    <!-- Main Container -->
+    <div class="form-container glass-effect rounded-3xl p-8 w-full max-w-md shadow-2xl" data-aos="fade-up" data-aos-duration="1000">
+        
+        <!-- Logo Section -->
+        <div class="logo-container flex justify-center items-center text-center mb-4" data-aos="zoom-in" data-aos-delay="200">
+            <div class="logo-glow">
+                <img src="/img/Skorlife_logo_white.svg" class="h-12 mx-auto mb-2" alt="Logo Skorlife">
+            </div>
+        </div>
+        
+        <!-- Title -->
+        <h2 class="text-3xl font-bold text-center title-gradient mb-8 font-poppins" data-aos="fade-down" data-aos-delay="400">
+            Daftar Menjadi Affiliate
+        </h2>
+        
+        <!-- Registration Form -->
+        <form id="registrationForm" class="space-y-6">
+            
+            <!-- Name Input -->
+            <div data-aos="fade-right" data-aos-delay="600">
+                <label for="name" class="block text-sm font-medium text-white mb-2">
+                    <i class="fas fa-user mr-2"></i>Nama Lengkap
+                </label>
+                <input type="text" id="name" name="name" required 
+                       class="input-glow w-full px-4 py-3 border-2 border-white/30 rounded-xl bg-white/10 text-white placeholder-white/70 focus:outline-none transition-all duration-300"
+                       placeholder="Masukkan nama lengkap Anda">
+            </div>
+            
+            <!-- Phone Input -->
+            <div data-aos="fade-left" data-aos-delay="700">
+                <label for="phone" class="block text-sm font-medium text-white mb-2">
+                    <i class="fas fa-phone mr-2"></i>Nomor Telepon
+                </label>
+                <div class="flex rounded-xl overflow-hidden">
+                    <span class="inline-flex items-center px-4 bg-white/20 text-white text-sm font-medium border-2 border-r-0 border-white/30">
+                        +62
+                    </span>
+                    <input type="tel" id="phone" name="phone" required 
+                           placeholder="8xxxxxxxxx"
+                           class="input-glow flex-1 px-4 py-3 border-2 border-l-0 border-white/30 bg-white/10 text-white placeholder-white/70 focus:outline-none transition-all duration-300">
+                </div>
+            </div>
+
+            <!-- PIN Input Section -->
+            <div data-aos="fade-up" data-aos-delay="800">
+                <label class="block text-sm font-medium text-white mb-4">
+                    <i class="fas fa-lock mr-2"></i>PIN (6 Digit Angka)
+                </label>
+                <div class="flex justify-center space-x-3">
+                    <input type="text" id="pin1" data-pin-index="0" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="pin2" data-pin-index="1" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="pin3" data-pin-index="2" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="pin4" data-pin-index="3" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="pin5" data-pin-index="4" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="pin6" data-pin-index="5" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Confirm PIN Input Section -->
+            <div data-aos="fade-up" data-aos-delay="900">
+                <label class="block text-sm font-medium text-white mb-4">
+                    <i class="fas fa-lock mr-2"></i>Konfirmasi PIN
+                </label>
+                <div class="flex justify-center space-x-3">
+                    <input type="text" id="confirmPin1" data-pin-index="0" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="confirmPin2" data-pin-index="1" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="confirmPin3" data-pin-index="2" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="confirmPin4" data-pin-index="3" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="confirmPin5" data-pin-index="4" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                    <input type="text" id="confirmPin6" data-pin-index="5" maxlength="1" inputmode="numeric" pattern="[0-9]"
+                           class="pin-input w-12 h-12 text-center text-xl font-bold border-2 border-white/30 rounded-xl bg-white/10 text-white focus:outline-none">
+                </div>
+            </div>
+
+            <!-- Terms Checkbox -->
+            <div class="flex items-start space-x-3 text-sm text-white/90" data-aos="fade-up" data-aos-delay="1000">
+                <input type="checkbox" id="termsCheckbox" class="checkbox-custom mt-1">
+                <label for="termsCheckbox" class="select-none cursor-pointer">
+                    Saya menyetujui <a href="#" class="text-blue-300 hover:text-blue-200 underline transition-colors">Syarat & Ketentuan</a> yang ditentukan
+                </label>
+            </div>
+            
+            <!-- Submit Button -->
+            <button id="submitButton" type="submit" disabled
+                    class="ripple w-full py-4 px-6 rounded-xl text-white font-semibold text-lg transition-all duration-300 bg-white/20 cursor-not-allowed opacity-50"
+                    data-aos="fade-up" data-aos-delay="1100">
+                <span id="submitText">Daftar Sekarang</span>
+                <span id="submitLoader" class="loading-spinner hidden ml-2"></span>
+            </button>
+
+        </form>
+
+        <!-- Message Display -->
+        <div id="message" class="mt-6 text-center text-sm"></div>
+
+        <!-- Separator -->
+        <div class="relative flex py-6 items-center" data-aos="fade-up" data-aos-delay="1200">
+            <div class="flex-grow separator-line h-px"></div>
+            <span class="flex-shrink mx-4 text-white/70 font-medium">ATAU</span>
+            <div class="flex-grow separator-line h-px"></div>
+        </div>
+
+        <!-- Google Register Button -->
+        <div id="googleWrapper" class="google-btn-wrapper pointer-events-none opacity-50 transition-all duration-300" data-aos="fade-up" data-aos-delay="1300" style="opacity: 0.5; pointer-events: none;">
+            <div id="g_id_onload"
+                data-client_id="599708309205-ipref1vmud91nd4fjjocdl1duvne5krt.apps.googleusercontent.com"
+                data-callback="handleCredentialResponse"
+                data-auto_prompt="false">
+            </div>
+            <div class="g_id_signin"
+                data-type="standard"
+                data-size="large"
+                data-theme="outline"
+                data-text="signup_with"
+                data-shape="rectangular"
+                data-logo_alignment="left">
+            </div>
+        </div>
+
+        <!-- Login Link -->
+        <p class="mt-6 text-center text-sm text-white/80" data-aos="fade-up" data-aos-delay="1400">
+            Sudah punya akun? 
+            <a href="/login" class="font-medium text-blue-300 hover:text-blue-200 transition-colors underline">
+                Login di sini
+            </a>
+        </p>
+    </div>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 1000,
+            easing: 'ease-out-cubic',
+            once: true,
+            offset: 50
+        });
+
+        // Initialize Particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: ['#3b82f6', '#60a5fa', '#93c5fd', '#dbeafe']
+                },
+                shape: {
+                    type: 'circle',
+                    stroke: {
+                        width: 0,
+                        color: '#000000'
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 2,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#3b82f6',
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: 'none',
+                    random: false,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'repulse'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 140,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    bubble: {
+                        distance: 400,
+                        size: 40,
+                        duration: 2,
+                        opacity: 8,
+                        speed: 3
+                    },
+                    repulse: {
+                        distance: 100,
+                        duration: 0.4
+                    },
+                    push: {
+                        particles_nb: 4
+                    },
+                    remove: {
+                        particles_nb: 2
+                    }
+                }
+            },
+            retina_detect: true
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkbox = document.getElementById('termsCheckbox');
+            const submitButton = document.getElementById('submitButton');
+            const submitText = document.getElementById('submitText');
+            const submitLoader = document.getElementById('submitLoader');
+            const googleWrapper = document.getElementById('googleWrapper');
+            const messageElement = document.getElementById('message');
+
+            // Checkbox animation and functionality
+            checkbox.addEventListener('change', () => {
+                const checked = checkbox.checked;
+
+                // Animate checkbox
+                gsap.to(checkbox, {
+                    scale: checked ? 1.2 : 1,
+                    duration: 0.2,
+                    ease: "back.out(1.7)"
+                });
+
+                // Submit button animation
+                if (checked) {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('bg-white/20', 'cursor-not-allowed', 'opacity-50');
+                    submitButton.classList.add('btn-primary', 'cursor-pointer');
+                    
+                    gsap.to(submitButton, {
+                        scale: 1.05,
+                        duration: 0.3,
+                        ease: "back.out(1.7)"
+                    });
+                } else {
+                    submitButton.disabled = true;
+                    submitButton.classList.add('bg-white/20', 'cursor-not-allowed', 'opacity-50');
+                    submitButton.classList.remove('btn-primary', 'cursor-pointer');
+                    
+                    gsap.to(submitButton, {
+                        scale: 1,
+                        duration: 0.3
+                    });
+                }
+
+                // Google wrapper animation
+                googleWrapper.classList.toggle('pointer-events-none', !checked);
+                googleWrapper.style.pointerEvents = checked ? 'auto' : 'none'; // ← INI TAMBAHAN PENTING
+                gsap.to(googleWrapper, {
+                    opacity: checked ? 1 : 0.5,
+                    scale: checked ? 1 : 0.95,
+                    duration: 0.3
+                });
+            });
+
+            // Form elements
+            const registrationForm = document.getElementById('registrationForm');
+            const pinInputs = Array.from(document.querySelectorAll('#pin1, #pin2, #pin3, #pin4, #pin5, #pin6'));
+            const confirmPinInputs = Array.from(document.querySelectorAll('#confirmPin1, #confirmPin2, #confirmPin3, #confirmPin4, #confirmPin5, #confirmPin6'));
+
+            // Enhanced PIN input functionality
+            function setupPinInputs(inputs) {
+                inputs.forEach((input, index) => {
+                    input.addEventListener('input', (e) => {
+                        // Only allow digits
+                        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+                        // Add filled class for styling
+                        if (e.target.value) {
+                            e.target.classList.add('filled');
+                            gsap.to(e.target, {
+                                scale: 1.1,
+                                duration: 0.2,
+                                ease: "back.out(1.7)"
+                            });
+                        } else {
+                            e.target.classList.remove('filled');
+                            gsap.to(e.target, {
+                                scale: 1,
+                                duration: 0.2
+                            });
+                        }
+
+                        // Auto-focus next input
+                        if (e.target.value.length === 1 && index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    });
+
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                            inputs[index - 1].focus();
+                        }
+                    });
+
+                    // Enhanced paste functionality
+                    input.addEventListener('paste', (e) => {
+                        e.preventDefault();
+                        const pasteData = e.clipboardData.getData('text').trim();
+                        if (/^\d{6}$/.test(pasteData)) {
+                            inputs.forEach((inp, i) => {
+                                inp.value = pasteData[i];
+                                inp.classList.add('filled');
+                                gsap.to(inp, {
+                                    scale: 1.1,
+                                    duration: 0.2,
+                                    delay: i * 0.1,
+                                    ease: "back.out(1.7)"
+                                });
+                            });
+                            inputs[inputs.length - 1].focus();
+                        }
+                    });
+
+                    // Focus animations
+                    input.addEventListener('focus', () => {
+                        gsap.to(input, {
+                            y: -5,
+                            scale: 1.1,
+                            duration: 0.3,
+                            ease: "back.out(1.7)"
+                        });
+                    });
+
+                    input.addEventListener('blur', () => {
+                        gsap.to(input, {
+                            y: 0,
+                            scale: input.classList.contains('filled') ? 1.05 : 1,
+                            duration: 0.3
+                        });
+                    });
+                });
+            }
+
+            setupPinInputs(pinInputs);
+            setupPinInputs(confirmPinInputs);
+
+            // Enhanced form submission
+            registrationForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                // Show loading state
+                submitText.textContent = 'Mendaftar...';
+                submitLoader.classList.remove('hidden');
+                submitButton.disabled = true;
+
+                const name = document.getElementById('name').value;
+                const phoneInput = document.getElementById('phone').value;
+                const phone = '+62' + phoneInput;
+                const pin = pinInputs.map(input => input.value).join('');
+                const confirmPin = confirmPinInputs.map(input => input.value).join('');
+
+                // Enhanced validation with animations
+                if (pin.length !== 6 || !/^\d{6}$/.test(pin)) {
+                    showMessage('PIN harus 6 digit angka!', 'error');
+                    shakeElements(pinInputs);
+                    resetSubmitButton();
+                    return;
+                }
+
+                if (pin !== confirmPin) {
+                    showMessage('PIN dan Konfirmasi PIN tidak cocok!', 'error');
+                    shakeElements(confirmPinInputs);
+                    resetSubmitButton();
+                    return;
+                }
+
+                if (!/^8\d{8,}$/.test(phoneInput)) {
+                    showMessage('Nomor telepon harus dimulai dengan 8 dan minimal 9 digit!', 'error');
+                    shakeElements([document.getElementById('phone')]);
+                    resetSubmitButton();
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name, phone, pin })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showMessage(data.message, 'success');
+                        
+                        // Success animation
+                        gsap.to('.form-container', {
+                            scale: 1.05,
+                            duration: 0.3,
+                            ease: "back.out(1.7)",
+                            yoyo: true,
+                            repeat: 1
+                        });
+
+                        // Clear form
+                        registrationForm.reset();
+                        pinInputs.forEach(input => {
+                            input.value = '';
+                            input.classList.remove('filled');
+                        });
+                        confirmPinInputs.forEach(input => {
+                            input.value = '';
+                            input.classList.remove('filled');
+                        });
+
+                        // Redirect after delay
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 2000);
+                    } else {
+                        showMessage(data.message || 'Terjadi kesalahan saat registrasi.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showMessage('Terjadi kesalahan jaringan atau server.', 'error');
+                }
+
+                resetSubmitButton();
+            });
+
+            // Helper functions
+            function showMessage(text, type) {
+                messageElement.textContent = text;
+                messageElement.className = `mt-6 text-center text-sm font-medium ${
+                    type === 'success' ? 'text-green-300' : 'text-red-300'
+                }`;
+
+                // Animate message
+                gsap.fromTo(messageElement, 
+                    { opacity: 0, y: 20 },
+                    { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.7)" }
+                );
+
+                if (type === 'success') {
+                    messageElement.classList.add('success-animation');
+                } else {
+                    messageElement.classList.add('error-shake');
+                }
+
+                setTimeout(() => {
+                    messageElement.classList.remove('success-animation', 'error-shake');
+                }, 600);
+            }
+
+            function shakeElements(elements) {
+                elements.forEach(element => {
+                    gsap.to(element, {
+                        x: [-10, 10, -10, 10, 0],
+                        duration: 0.5,
+                        ease: "power2.inOut"
+                    });
+                });
+            }
+
+            function resetSubmitButton() {
+                submitText.textContent = 'Daftar Sekarang';
+                submitLoader.classList.add('hidden');
+                if (checkbox.checked) {
+                    submitButton.disabled = false;
+                }
+            }
+
+            // Input focus animations
+            const inputs = document.querySelectorAll('input[type="text"], input[type="tel"]');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    gsap.to(input, {
+                        y: -2,
+                        duration: 0.3,
+                        ease: "back.out(1.7)"
+                    });
+                });
+
+                input.addEventListener('blur', () => {
+                    gsap.to(input, {
+                        y: 0,
+                        duration: 0.3
+                    });
+                });
+            });
+        });
+
+        // Google Login Callback Function
+        async function handleCredentialResponse(response) {
+            console.log("Encoded ID Token: " + response.credential);
+
+            try {
+                const res = await fetch('/api/google-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id_token: response.credential })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Success animation before redirect
+                    gsap.to('.form-container', {
+                        scale: 1.1,
+                        opacity: 0.8,
+                        duration: 0.5,
+                        ease: "back.out(1.7)"
+                    });
+                    
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 500);
+                } else {
+                    alert(data.message || 'Login gagal');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Terjadi kesalahan saat login.');
+            }
+        }
+    </script>
+</body>
+</html>
+
